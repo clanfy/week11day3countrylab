@@ -2,8 +2,8 @@ var app = function(){
   var url = 'https://restcountries.eu/rest/v1/all';
   makeRequest(url, requestCompleted);
 
-  var select = document.querySelector('select');
-  select.onchange = handleSelectChanged;
+  // var select = document.querySelector('select');
+  // select.onchange = handleSelectChanged;
 
 };
 
@@ -19,23 +19,26 @@ var makeRequest = function(url, callback){
 };
 
 var requestCompleted = function(){
-  //callback called successfully
+
   console.log("Whoot! Success");
-  //checking our status
   if(this.status !== 200) return;
-// this = request object, responseText is what we've got back from the API
-var jsonString = this.responseText;
-  //parse the json string into objects
-  var countries = JSON.parse(jsonString);
+  var countries = getCountries(this.responseText);
   // populateList(countries);
   populateSelect(countries);
+
+
+
 };
 
-// function for just sticking the info onto the page - goes to the DOM and populates the page with all the countries
+var getCountries = function(responseText){
+  var jsonString = responseText;
+  var countries = JSON.parse(jsonString);
+  return countries;
+};
+
+// // function for just sticking the info onto the page - goes to the DOM and populates the page with all the countries
 // var populateList = function(countries){
 //   var ul = document.getElementById('country-list');
-
-//   //loop through all the countries, create an li and then append it to the ul
 //   countries.forEach(function(country){
 //     var li = document.createElement('li');
 //     li.innerText = country.name;
@@ -45,22 +48,39 @@ var jsonString = this.responseText;
 // };
 
 var populateSelect = function(countries){
+  console.log(countries);
+  var select = document.getElementById('country-select');
 
-  var select1 = document.getElementById('country-select');
-
-  countries.forEach(function(country){
+  countries.forEach(function(country, index){
     var option = document.createElement('option');
     option.innerText = country.name;
-    select1.appendChild(option);
+    option.value = index;
+    select.appendChild(option);
   });
+  select.addEventListener('change', function(){
+    console.log(this.value);
+    console.log(countries[this.value]);
+    // populatePTags(country)
+  });
+
 };
 
+// var handleSelectChanged = function(event){
+//   console.log(event.target);
+//   var country = findCountry( event.target.value );
+//   // console.log(event.target.value);
+//   console.log(event.target.value);
+//   var pTag = document.querySelector('#select-result');
+//   console.log(country);
+//   pTag.innerText = country.name;
+// };
 
-var handleSelectChanged = function(e){
-  var pTag = document.querySelector('#select-result');
-  pTag.innerText = this.value;
-  console.log(e);
-};
+// var findCountry = function(index){
+//   var countries = getCountries(responseText);
+//   console.log(countries);
+//   var country = countries[index];
+//   return country;
+// };
 
 
 window.onload = app;
